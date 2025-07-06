@@ -47,6 +47,9 @@ async def extract_text_from_url(session, url):
         return ""
 
 async def analyze_text(original_text):
+    if not original_text.strip():
+        return {"error": "Input text is empty."}
+
     keywords = extract_keywords(original_text)
     all_texts = []
     all_urls = []
@@ -56,9 +59,19 @@ async def analyze_text(original_text):
             urls = await search_google(session, keyword)
             fetched = await asyncio.gather(*(extract_text_from_url(session, url) for url in urls))
             for url, text in zip(urls, fetched):
-                if text:
+                if text.strip():
                     all_texts.append(text)
                     all_urls.append(url)
+
+    if not all_texts:
+        return {
+            "keywords": keywords,
+            "similarities": [],
+            "results": [],
+            "highest_score": 0.0,
+            "highest_url": None,
+            "verdict": "❌ No valid sources found to compare. Try different input."
+        }
 
     similarities = compute_similarity(original_text, all_texts)
     highest_score = max(similarities) if similarities.size else 0
@@ -71,12 +84,12 @@ async def analyze_text(original_text):
         "results": [
             {
                 "url": str(all_urls[i]),
-                "score": round(float(score) * 100, 2),  # now in percentage
+                "score": round(float(score) * 100, 2),  # percentage
                 "plagiarized": bool(score >= THRESHOLD)
             }
             for i, score in enumerate(similarities)
         ],
-        "highest_score": round(float(highest_score) * 100, 2),  # now in percentage
+        "highest_score": round(float(highest_score) * 100, 2),  # percentage
         "highest_url": str(all_urls[highest_index]) if highest_index >= 0 else None,
         "verdict": verdict
     }

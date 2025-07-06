@@ -12,6 +12,7 @@ def check_plagiarism():
     try:
         data = request.get_json()
         text = data.get("text", "")
+        print(f"---------------- DATA ---------------\n{text}")
         result = asyncio.run(analyze_text(text))
         return jsonify(result)
     except Exception as e:
