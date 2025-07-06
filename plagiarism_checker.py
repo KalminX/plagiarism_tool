@@ -67,16 +67,16 @@ async def analyze_text(original_text):
 
     return {
         "keywords": keywords,
-        "similarities": [float(s) for s in similarities],
+        "similarities": [round(float(s) * 100, 2) for s in similarities],
         "results": [
             {
                 "url": str(all_urls[i]),
-                "score": round(float(score), 3),
+                "score": round(float(score) * 100, 2),  # now in percentage
                 "plagiarized": bool(score >= THRESHOLD)
             }
             for i, score in enumerate(similarities)
         ],
-        "highest_score": round(float(highest_score), 3),
+        "highest_score": round(float(highest_score) * 100, 2),  # now in percentage
         "highest_url": str(all_urls[highest_index]) if highest_index >= 0 else None,
         "verdict": verdict
     }
