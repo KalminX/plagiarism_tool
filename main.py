@@ -52,7 +52,7 @@ def load_documents(example_path, reference_paths):
 # ----------------------------
 # Plagiarism Detection
 # ----------------------------
-def detect_plagiarism(docs, threshold=0.6):
+def detect_plagiarism(docs, threshold=0.5):
     vectorizer = TfidfVectorizer()
     tfidf_matrix = vectorizer.fit_transform(docs)
 
