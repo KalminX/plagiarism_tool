@@ -32,7 +32,9 @@ async def search_google(session, query):
     }
     async with session.get(url, params=params) as response:
         data = await response.json()
+        print(f"🔍 Raw Google response for '{query}': {data}")
         return [item["link"] for item in data.get("items", [])]
+
 
 async def extract_text_from_url(session, url):
     try:
@@ -54,14 +56,30 @@ async def analyze_text(original_text):
     all_texts = []
     all_urls = []
 
+    print(f"🧠 Extracted keywords: {keywords}")
+
+    google_api_calls = 0  # 🧮 Initialize counter
+
     async with aiohttp.ClientSession() as session:
         for keyword in keywords:
             urls = await search_google(session, keyword)
+            google_api_calls += 1  # ✅ Increment API call count
+
+            print(f"\n🔎 Keyword: {keyword}")
+            print(f"🔗 URLs found: {urls}")
+
             fetched = await asyncio.gather(*(extract_text_from_url(session, url) for url in urls))
+            print(f"📄 Texts fetched: {[len(t) for t in fetched]}")
+
             for url, text in zip(urls, fetched):
                 if text.strip():
                     all_texts.append(text)
                     all_urls.append(url)
+                else:
+                    print(f"❌ No usable text from: {url}")
+
+    print(f"📊 Total Google API calls made: {google_api_calls}")  # 🖨️ Show total API calls
+    print(f"--------------------ALL TEXT-----------------\n{all_texts}")
 
     if not all_texts:
         return {
@@ -91,5 +109,6 @@ async def analyze_text(original_text):
         ],
         "highest_score": round(float(highest_score) * 100, 2),  # percentage
         "highest_url": str(all_urls[highest_index]) if highest_index >= 0 else None,
-        "verdict": verdict
+        "verdict": verdict,
+        "google_api_calls": google_api_calls  # Optionally return in JSON too
     }
