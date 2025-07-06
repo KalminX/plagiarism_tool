@@ -107,6 +107,7 @@ async def analyze_text(original_text):
                     "plagiarized": bool(score >= THRESHOLD)
                 }
                 for i, score in enumerate(similarities)
+                if round(float(score) * 100, 2) >= 1.0  # ✅ Filter scores >= 1%
             ],
             key=lambda x: x["score"],
             reverse=True
