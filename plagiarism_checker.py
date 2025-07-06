@@ -1,3 +1,4 @@
+import os
 import re
 import aiohttp
 import asyncio
@@ -8,8 +9,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from config import GOOGLE_API_KEY, SEARCH_ENGINE_ID, THRESHOLD, NUM_KEYWORDS, NUM_SEARCH_RESULTS
 
-nltk.download("punkt")
-nltk.download("stopwords")
+
+nltk.data.path.append(os.path.join(os.path.dirname(__file__), "nltk_data"))
 
 def extract_keywords(text):
     rake = Rake()
