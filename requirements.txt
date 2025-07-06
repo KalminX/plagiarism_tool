@@ -1,0 +1,14 @@
+aiohttp
+async-timeout
+aiofiles
+beautifulsoup4
+requests
+google-api-python-client
+nltk
+scikit-learn
+rake-nltk
+python-dotenv
+Flask[async]==2.3.3
+flask-cors==4.0.0
+gunicorn
+
