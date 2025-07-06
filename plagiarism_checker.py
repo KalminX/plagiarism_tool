@@ -99,16 +99,21 @@ async def analyze_text(original_text):
     return {
         "keywords": keywords,
         "similarities": [round(float(s) * 100, 2) for s in similarities],
-        "results": [
-            {
-                "url": str(all_urls[i]),
-                "score": round(float(score) * 100, 2),  # percentage
-                "plagiarized": bool(score >= THRESHOLD)
-            }
-            for i, score in enumerate(similarities)
-        ],
-        "highest_score": round(float(highest_score) * 100, 2),  # percentage
+        "results": sorted(
+            [
+                {
+                    "url": str(all_urls[i]),
+                    "score": round(float(score) * 100, 2),
+                    "plagiarized": bool(score >= THRESHOLD)
+                }
+                for i, score in enumerate(similarities)
+            ],
+            key=lambda x: x["score"],
+            reverse=True
+        ),
+        "highest_score": round(float(highest_score) * 100, 2),
         "highest_url": str(all_urls[highest_index]) if highest_index >= 0 else None,
         "verdict": verdict,
-        "google_api_calls": google_api_calls  # Optionally return in JSON too
+        "google_api_calls": google_api_calls
     }
+
